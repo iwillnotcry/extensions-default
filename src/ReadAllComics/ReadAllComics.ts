@@ -66,20 +66,22 @@ export class ReadAllComics implements ChapterProviding, MangaProviding, SearchRe
 
     private categoryId(href: string): string {
         const match = /\/category\/([^/?#]+)/.exec(href)
-        return match ? match[1] : ''
+        return match?.[1] ?? ''
     }
 
     private singleSlug(href: string): string {
-        const path = href.replace(BASE, '').split(/[?#]/)[0]
+        const path = href.replace(BASE, '').split(/[?#]/)[0] ?? ''
         const parts = path.split('/').filter(p => p.length > 0)
-        return parts.length === 1 ? parts[0] : ''
+        return parts.length === 1 ? (parts[0] ?? '') : ''
     }
 
     private parseChapterNumber(name: string, fallback: number): number {
         const cleaned = name.replace(/\((19|20)\d{2}\)/g, '').replace(/\b(19|20)\d{2}\b/g, '')
         const numbers = cleaned.match(/\d+(?:\.\d+)?/g)
         if (!numbers || numbers.length === 0) return fallback
-        const value = parseFloat(numbers[numbers.length - 1])
+        const last = numbers[numbers.length - 1]
+        if (last === undefined) return fallback
+        const value = parseFloat(last)
         return isNaN(value) ? fallback : value
     }
 
@@ -147,7 +149,7 @@ export class ReadAllComics implements ChapterProviding, MangaProviding, SearchRe
         let links = $('.list-story a')
         if (links.length === 0) {
             // fallback: any single-level link on the page that looks like a chapter
-            const firstWord = mangaId.split('-')[0]
+            const firstWord = mangaId.split('-')[0] ?? ''
             links = $('a[href]').filter((_, el) => {
                 const href = $(el).attr('href') ?? ''
                 const slug = this.singleSlug(href)
@@ -242,4 +244,4 @@ export class ReadAllComics implements ChapterProviding, MangaProviding, SearchRe
     async getViewMoreItems(_homepageSectionId: string, _metadata: unknown): Promise<PagedResults> {
         return App.createPagedResults({ results: [], metadata: undefined })
     }
-}
+}       
