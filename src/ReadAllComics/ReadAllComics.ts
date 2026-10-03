@@ -242,4 +242,4 @@ export class ReadAllComics implements ChapterProviding, MangaProviding, SearchRe
     async getViewMoreItems(_homepageSectionId: string, _metadata: unknown): Promise<PagedResults> {
         return App.createPagedResults({ results: [], metadata: undefined })
     }
-
+}
